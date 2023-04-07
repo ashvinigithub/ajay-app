@@ -6,7 +6,7 @@ import sqlite3
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 dbpath = os.path.join(basedir, 'sqlite-ajay-db.db')
-
+ 
 conn = sqlite3.connect(dbpath)
 cursor = conn.execute("Select * from sqlite_schema limit 100;")
 for i in cursor:
