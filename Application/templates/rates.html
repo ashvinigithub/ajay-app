@@ -1,0 +1,159 @@
+{% extends "index.html" %}
+{% block title %}Rates{% endblock %}
+
+{% block head %}
+
+<h1>RATES</h1>
+  {{ super() }}
+  <style type="text/css">
+    .important { color: #336699; }
+  </style>
+{% endblock %}
+{% block content %}
+
+{{ super() }}
+  <p class="important">
+    Welcome on my awesome homepage.
+{% endblock %}
+
+{% block javascripts_local  %}
+{{ super() }}
+<!-- <script src="{{ url_for('static', filename='js/homejs.js') }}"></script> -->
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+  let q = new Date();
+  // let todays_date = q.toISOString().slice(0, 10);
+  todays_date = new Date().toLocaleDateString();
+  const [month, day, year] = todays_date.split('/');
+  todays_date = [year, month, day].join('-');
+
+  $("#indexpageid").hide();
+  $("#salespageid").hide();
+  $("#displayreset_id").hide();
+  $("#ratespageid").show();
+
+  $("#displayreset_id").on("click", displayRatesData());
+
+  // Delete Rate data
+  $("#deleteratesdata_id").on("click", function(e){
+    e.preventDefault();
+    $("#ratesdeletedateoptionid").show();
+    $("#ratesdeletedateinputid").change(function() {
+        let selecteddeletedate = new Date($(this).val());
+        $("#ratessubmitoption_divid").hide();
+        selecteddeletedate = selecteddeletedate.toISOString().slice(0, 10);
+
+        if (selecteddeletedate <= todays_date){
+          $("#ratessubmitoption_divid").show();
+          $("#ratessubmitoption_divid").on("click", function(e){
+            e.preventDefault();
+             
+            $.ajax({
+                    method:"POST",
+                    url:"{{ url_for('deleteratesentry') }}",
+                    cache:false,
+                    data:{selecteddeletedate: selecteddeletedate},
+                    success:function(response){
+                      temptxt = "Rates Deleted on - " + selecteddeletedate;
+                      console.log(temptxt);
+                      alert(temptxt);
+                      location.reload();
+                    }
+                });
+          });
+        }
+        else{
+          $("#ratessubmitoption_divid").hide();
+          alert("please select a date less than today's date!");
+        }
+    
+    });
+  });
+
+
+  // Set Rate Data
+  $("#set_rate_button_modalid").on("click", function(e){
+    e.preventDefault();
+    $("#ratesdeletedateoptionid").hide();
+    $("#ratessubmitoption_divid").hide();
+    setratetoday();
+  });
+
+  function setratetoday() {
+    rate_24k = document.getElementById('rate_page_input_id_24k').value;
+    // rate_22k = document.getElementById('rate_page_input_id_22k').value;
+    // rate_20k = document.getElementById('rate_page_input_id_20k').value;
+    // rate_18k = document.getElementById('rate_page_input_id_18k').value;
+    // rate_16k = document.getElementById('rate_page_input_id_16k').value;
+    // rate_14k = document.getElementById('rate_page_input_id_14k').value;
+    // rate_12k = document.getElementById('rate_page_input_id_12k').value;
+    // rate_10k = document.getElementById('rate_page_input_id_10k').value;
+    // rate_9k = document.getElementById('rate_page_input_id_9k').value;
+    rate_silver = document.getElementById('rate_page_input_id_silver').value;
+
+    $.ajax({
+                    method:"POST",
+                    url:"{{url_for('updateratesfortoday') }}",
+                    cache:false,
+                    data:{rate_24k: rate_24k, rate_silver: rate_silver},
+                    success:function(response){
+                        alert("Data Updated!");
+                        location.reload();
+                    }
+                });
+
+  };
+
+
+  function displayRatesData() {
+          $("#ratesdeletedateoptionid").hide();
+          $("#ratessubmitoption_divid").hide();
+          $.ajax({
+                    method:"POST",
+                    url:"{{url_for('ratespagedata') }}",
+                    cache:false,
+                    success:function(response){
+                      $.each(response, function(i, item) {
+                        delete item["INSERT_DATE"];
+                        delete item["SERIAL_NO"];
+                    });
+                      tableGenerator('#rates_page_table', response);
+                    }
+                })
+          };
+            
+  function tableGenerator(selector, data){ // data is an array
+        let keys = Object.keys(Object.assign({}, ...data));// Get the keys to make the header
+        // Add header
+        let head = '<thead><tr>';
+        keys.forEach(function(key) {
+        head += '<th>'+key+'</th>';
+        });
+        $(selector).append(head+'</tr></thead>');
+        // Add body
+        let body = '<tbody>';
+        data.forEach(function(obj) { // For each row
+        let row = '<tr>';
+        keys.forEach(function(key) { // For each column
+            row += '<td>';
+            if (obj.hasOwnProperty(key)) { // If the obj doesnt has a certain key, add a blank space.
+            row += obj[key];
+            }
+            row += '</td>';
+        });
+        body += row+'<tr>';
+        });
+        $(selector).append(body+'</tbody>');
+        $(selector).append('<table>').addClass('table table-striped table-bordered table-hover');
+
+    };
+
+
+
+
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+{% block title %}Index Page{% endblock %}
+{% block head %}
+  {{ super() }}
+  <style type="text/css">
+    .important { color: #336699; }
+  </style>
+{% endblock %}
+{% block content %}
+<h1>THIS IS SECOND PAGE</h1>
+{{ super() }}
+  
+  <p class="important">
+    THIS IS SECOND footer PAGE!
+{% endblock %}

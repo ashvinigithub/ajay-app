@@ -1,0 +1,649 @@
+{% extends "index.html" %}
+{% block title %}RetailSales{% endblock %}
+
+{% block head %}
+<h1>RETAIL SALES</h1>
+  {{ super() }}
+  <style type="text/css">
+    .important { color: #336699; }
+  </style>
+{% endblock %}
+{% block content %}
+
+{{ super() }}
+  <p class="important">
+    Welcome on my awesome homepage.
+{% endblock %}
+
+{% block javascripts_local  %}
+{{ super() }}
+<!-- <script src="{{ url_for('static', filename='js/homejs.js') }}"></script> -->
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+
+//*************************** Select from Existing Record ******* STARTS *****************************
+  setexistingrecords();
+
+  $("#existing_record_id").change(function() {
+
+    $('#name_id').prop('readonly', false);
+    $('#mobile_number_id').prop('readonly', false);
+    $('#address_id').prop('readonly', false);
+
+    $("#cust_id").val('');
+    $("#name_id").val('');
+    $("#mobile_number_id").val('');
+    $("#address_id").val('');
+    $("#last_sale_on_id").val('');
+    $("#pending_amount_date_id").val('');
+    $("#pending_amount_id").val('');
+
+    let selectedrecord = $(this).val();
+    let myArray = selectedrecord.toString().split("|");
+
+    if ($("#existing_record_id").val() != '') {
+      $('#name_id').prop('readonly', true);
+      $('#mobile_number_id').prop('readonly', true);
+      $('#address_id').prop('readonly', true);
+    }
+
+    $("#cust_id").val(myArray[0].trim());
+    $("#name_id").val(myArray[1].trim());
+    $("#mobile_number_id").val(myArray[2].trim());
+    $("#address_id").val(myArray[3].trim());
+    $("#last_sale_on_id").val(myArray[4].trim());
+    $("#pending_amount_date_id").val(myArray[5].trim());
+    $("#pending_amount_id").val(myArray[6].trim());
+    setproductlist();
+
+  });
+//*************************** Select from Existing Record ********* ENDS *****************************
+
+callEventCalculate();
+getrates();
+getexistingcustomernames();
+
+let myDate = new Date();
+let month = myDate.getMonth() + 1;
+let prettyDate = myDate.getFullYear() + '-' + month + '-' + myDate.getDate();
+$("#date_id").val(prettyDate);
+
+$("#purity_id").change(function() {
+  let selected_option = $('option:selected', this).text()
+  getrates(selected_option);
+});
+
+
+checkformetalnameclickevent();
+function checkformetalnameclickevent(){
+  $(".metalname-class").click(function(e){
+    e.preventDefault();
+    functionmetalnamechange();
+  });
+};
+
+$("#retailsale_check_customer_btn_id").click(function(e) {
+  e.preventDefault();
+  checkcustomername();
+});
+
+
+$("#addRow").click(function(){
+
+let len=$('#dataAdd .container-fluid .form-row').length+1;
+$("#dataAdd .container-fluid:last").append(
+                ' <div class="form-row mt-1">'+
+                '<div class="form-group col-md-1">'+
+                '<label for ="metalname_id'+len+'"></label>'+
+                '<select style= "margin: auto; display: block;" class="browser-default custom-select metalname-class" id="metalname_id'+len+'">'+
+                                    '<option value="GOLD" selected>GOLD</option>'+
+                                    '<option value="SILVER">SILVER</option>'+
+                                    '<option value="OTHER">OTHERS</option>'+
+                                    '<option value="S RETURN">S RETURN</option>'+
+                                    '<option value="G RETURN">G RETURN</option>'+
+                                    '<option value="STONE">STONE</option>'+
+                                    '<option value="DIAMOND">DIAMOND</option>'+
+                                    '<option value="1 GRAM GOLD">1gm GOLD</option>'+
+                                    '<option value="ADVANCE">ADVANCE</option>'+
+                '</select>'+
+                ' </div>'+
+                '<div class="form-group col-md-1">'+
+                '<label></label>'+
+                '<input class="form-control" id="productinformation_id'+len+'" type="text">'+
+                ' </div>'+
+                '<div class="form-group col-md-1">'+
+                            '<label></label>'+
+                            '<select class="browser-default custom-select mt-4 purity-class" id="purity_id'+len+ '">'+
+                                '<option value="24k">24k</option>'+
+                                '<option value="22k">22k</option>'+
+                                '<option value="18k" selected>18k</option>'+
+                                '<option value="16k">16k</option>'+
+                                '<option value="14k">14k</option>'+
+                                '<option value="12k">12k</option>'+
+                                '<option value="10k">10k</option>'+
+                                '<option value="9k">9k</option>'+
+                                '<option value="Silver-P">Silver-P</option>'+
+                                '<option value="Silver">Silver</option>'+
+                                '<option value="NA">NA</option>'+
+                            '</select>'+
+                  '</div>'+
+                '<div class="form-group col-md-1">'+
+                '<label></label>'+
+                '<input class="form-control" id="hsncode_id'+len+'" type="text" value="7113">'+
+                '</div>'+
+
+                '<div class="form-group col-md-1">'+
+                ' <label></label>'+
+                ' <input class="form-control weight-class" id="weight_id'+len+'" type="number" min="0" placeholder=0 ></div>'+
+
+                '<div class="form-group col-md-1">'+
+                ' <label></label>'+
+                ' <input class="form-control quantity-class" id="quantity_id'+len+'" type="number" value="1" min="1" placeholder=1 ></div>'+
+
+                '<div class="form-group col-md-1">'+
+                '<label></label>'+
+                '<input class="form-control less-weight-class" id="less_weight_id'+len+'" type="number" min="0" placeholder=0>'+
+                '</div>'+
+
+                '<div class="form-group col-md-1">'+
+                '<label></label>'+
+                '<input class="form-control net-weight-class" id="net_weight_id'+len+'" type="number" min="0" placeholder=0 readonly>'+
+                '</div>'+
+
+                '<div class="form-group col-md-1">'+
+                ' <label></label>'+
+                ' <input class="form-control rate-class" id="rate_id'+len+'" type="text" min="0" placeholder=&#8377;></div>'+
+
+                // '<div class="form-group col-md-1">'+
+                //                 ' <label></label>'+
+                //                 '<select style= "margin: auto; display: block;" class="browser-default custom-select" id="make_percent_id'+len+ '">'+
+                //                     '<option value="0.15" selected>15%</option>'+
+                //                     '<option value="0.14">14%</option>'+
+                //                     '<option value="0.13">13%</option>'+
+                //                     '<option value="0.12">12%</option>'+
+                //                     '<option value="0.11">11%</option>'+
+                //                     '<option value="0.10">10%</option>'+
+                //                     '<option value="0.09">09%</option>'+
+                //                     '<option value="0.08">08%</option>'+
+                //                     '<option value="0.05">05%</option>'+
+                //                     '<option value="0.00">NA</option>'+
+                //                 '</select>'+
+                // '</div>'+
+
+                '<div class="form-group col-md-1">'+
+                ' <label></label>'+
+                ' <input class="form-control labour-per-gm-class" id="makelabour_id'+len+'" type="text" min="0" placeholder=0></div>'+
+
+                '<div class="form-group col-md-1">'+
+                ' <label></label>'+
+                ' <input class="form-control maketotal-class" id="maketotal_id'+len+'" type="text" min="0" placeholder=0></div>'+
+
+                '<div class="form-group col-md-1">'+
+                ' <label></label>'+
+                ' <input class="form-control final-total-class" id="finaltotal_id'+len+'" type="number" placeholder=0></div>'+
+
+                '</div>'
+                );
+  // added_purity_id = '#purity_id'+len
+  // added_rate_id = '#rate_id'+len
+  getrates(selected_option='18k', '#rate_id'+len, '#purity_id'+len)
+  $(".purity-class").change(function() {
+      let selected_option = $('option:selected', this).text();
+      getrates(selected_option, '#rate_id'+len, '#purity_id'+len);
+      callEventCalculate();
+    });
+  checkformetalnameclickevent();
+  callEventCalculate();
+});
+        
+$("#deleteRow").click(function(){
+    let len=$('#dataAdd .container-fluid .form-row').length;
+    if(len>1){
+    $("#dataAdd .container-fluid .form-row").last().remove();
+    }else{
+    alert('Not able to Delete');
+  }
+});
+
+
+function callEventCalculate(){
+  $(".metalname-class, .weight-class , .purity-class, .quantity-class, .rate-class, .less-weight-class, .labour-per-gm-class, .maketotal-class").change(function(){
+
+    for (let i = 1; i <= 20; i++) {
+      if (i === 1){
+        selector_metalname_id = "#metalname_id"
+        selector_weight_id = "#weight_id"
+        selector_less_weight_id = "#less_weight_id"
+        selector_net_weight_id = "#net_weight_id"
+        selector_rate_id = "#rate_id"
+        selector_makelabour_id = "#makelabour_id"
+        selector_maketotal_id = "#maketotal_id"
+        selector_finaltotal_id = "#finaltotal_id"
+        selector_quantity_id = "#quantity_id"
+        // selector_making_percentage = "#make_percent_id"
+        if( typeof $(selector_weight_id).val() != 'undefined' || $(selector_weight_id).val() != null ){
+          if($(selector_weight_id).val() !=0 && $(selector_rate_id).val() != 0){
+            calc_cost(selector_metalname_id, selector_weight_id, selector_less_weight_id, selector_net_weight_id, selector_rate_id, selector_makelabour_id, selector_maketotal_id, selector_finaltotal_id,selector_quantity_id);
+          }
+          else {
+            $(selector_less_weight_id).val(0.00);
+            $(selector_net_weight_id).val(0.00);
+            $(selector_makelabour_id).val(0.00);
+            $(selector_maketotal_id).val(0.00);
+            // $(selector_finaltotal_id).val(0.00);
+          };
+        };
+      }
+      else {
+        selector_metalname_id = "#metalname_id"+i;
+        selector_weight_id = "#weight_id"+i;
+        selector_less_weight_id = "#less_weight_id"+i;
+        selector_net_weight_id = "#net_weight_id"+i;
+        selector_rate_id = "#rate_id"+i;
+        selector_makelabour_id = "#makelabour_id"+i;
+        selector_maketotal_id = "#maketotal_id"+i;
+        selector_finaltotal_id = "#finaltotal_id"+i;
+        selector_quantity_id = "#quantity_id"+i;
+        // selector_making_percentage = "#make_percent_id"+i;
+        if( typeof $(selector_weight_id).val() != 'undefined' || $(selector_weight_id).val() != null ){
+          if($(selector_weight_id).val() !=0 && $(selector_rate_id).val() != 0){
+            calc_cost(selector_metalname_id, selector_weight_id, selector_less_weight_id, selector_net_weight_id, selector_rate_id, selector_makelabour_id, selector_maketotal_id, selector_finaltotal_id,selector_quantity_id);
+          }
+          else {
+            $(selector_less_weight_id).val(0.00);
+            $(selector_net_weight_id).val(0.00);
+            $(selector_makelabour_id).val(0.00);
+            $(selector_maketotal_id).val(0.00);
+            // $(selector_finaltotal_id).val(0.00);
+          };
+        };
+      };
+    };
+    
+  });
+};
+
+
+function calc_cost(selector_metalname_id = "#metalname_id", selector_weight_id="#weight_id", selector_less_weight_id="#less_weight_id", selector_net_weight_id="#net_weight_id", selector_rate_id="#rate_id", selector_makelabour_id="#makelabour_id", selector_maketotal_id="#maketotal_id", selector_finaltotal_id="#finaltotal_id", selector_quantity_id="#quantity_id"){
+
+  quantity = Number($(selector_quantity_id).val());
+  // console.log(selector_quantity_id, quantity);
+  metalName = $(selector_metalname_id).val().toUpperCase();
+  labourpergram = Number($(selector_makelabour_id).val());
+  makingcharges = Number($(selector_maketotal_id).val());
+  making_percentage_val = 0.15
+ 
+  if (metalName == 'GOLD' || metalName == 'SILVER'){
+
+    let netweight = $(selector_weight_id).val() - $(selector_less_weight_id).val(); // calcuate net weight
+    $(selector_net_weight_id).val(netweight.toFixed(2)); // set the net weight
+
+    if(labourpergram == 0 || makingcharges == 0) {
+      labourpergram = Number(netweight * making_percentage_val * $(selector_rate_id).val()) / Number(netweight);
+      makingcharges = Number(netweight * labourpergram);
+      final_total_calc_value =  Number(netweight * $(selector_rate_id).val() * quantity ) + Number(makingcharges);
+      $(selector_makelabour_id).val(labourpergram.toFixed(2));
+      $(selector_maketotal_id).val(makingcharges.toFixed(2));
+      $(selector_finaltotal_id).val(final_total_calc_value.toFixed(2));
+    }
+    else {
+      final_total_calc_value =  Number(netweight * $(selector_rate_id).val() * quantity) + Number(makingcharges);
+      $(selector_makelabour_id).val(labourpergram.toFixed(2));
+      $(selector_maketotal_id).val(makingcharges.toFixed(2));
+      $(selector_finaltotal_id).val(final_total_calc_value.toFixed(2));
+    }
+  }
+  else if (metalName == 'G RETURN' || metalName == 'S RETURN') {
+
+    let netweight = $(selector_weight_id).val() - $(selector_less_weight_id).val();  // calcuate net weight
+    $(selector_net_weight_id).val(netweight.toFixed(2)); // set the net weight
+
+    final_total_calc_value =  Number(netweight * $(selector_rate_id).val() * quantity * -1); // calculate return value as negative number
+    console.log("final_total_calc_value", final_total_calc_value)
+    $(selector_finaltotal_id).val(final_total_calc_value.toFixed(2));
+  }
+
+  else if (metalName == 'STONE' || metalName == '1 GRAM GOLD' || metalName == 'OTHER'  || metalName == 'DIAMOND') {
+    stoneweight = $(selector_weight_id).val();
+    makingcharges = Number($(selector_maketotal_id).val());
+    let netweight = stoneweight - $(selector_less_weight_id).val();
+    $(selector_net_weight_id).val(netweight.toFixed(2));
+    final_total_calc_value =  Number(netweight * $(selector_rate_id).val() * quantity ) + Number(makingcharges);
+    $(selector_finaltotal_id).val(final_total_calc_value.toFixed(2));
+  }
+
+};
+
+
+// ****************************************************************************************************************
+// ***************************** Start of Calcuate Total Cost from enetered items *****************************
+// ****************************************************************************************************************
+
+$("#gettotalcost_id").click(function(e){
+  e.preventDefault();
+  let total_final_amount = 0;
+  
+  if (($("#finaltotal_id").val() =='') || ($("#finaltotal_id").val() == 0) || ($("#existing_record_id").val() == '')) {
+    if ($("#existing_record_id").val() == ''){
+      alert("Please select a customer record!");
+    }
+    else {
+    alert("Please enter data for atleast one item!");
+    };
+  }
+  else {
+    selector_finaltotal_id = "#finaltotal_id";
+    total_final_amount = Number($("#finaltotal_id").val());
+    for (let i = 2; i <= 20; i++) {
+        selector_finaltotal_id = "#finaltotal_id"+i;
+        // console.log(selector_finaltotal_id, $(selector_finaltotal_id).val());
+        if( typeof $(selector_finaltotal_id).val() != 'undefined' || $(selector_finaltotal_id).val() != null ){
+          total_final_amount = Number(total_final_amount) + Number($(selector_finaltotal_id).val());
+        };
+      };
+      total_final_amount = total_final_amount.toFixed(2);
+
+      if (total_final_amount > 0) {
+        $("#total_amount_id").val(total_final_amount);
+        $("#final_amount_id").val(total_final_amount);
+
+        s_c_gst_amount = (total_final_amount * 0.015).toFixed(2);
+        $("#sgst_amount_id").val(s_c_gst_amount);
+        $("#cgst_amount_id").val(s_c_gst_amount);
+
+        gross_amount = Number(total_final_amount) + (2 * Number(s_c_gst_amount));
+        gross_amount = parseInt(gross_amount) //gross_amount.toFixed(2);
+        $("#gross_amount_id").val(gross_amount);
+      }
+      else {
+        $("#total_amount_id").val(total_final_amount);
+        $("#final_amount_id").val(total_final_amount);
+        $("#sgst_amount_id").val(0);
+        $("#cgst_amount_id").val(0);
+        $("#gross_amount_id").val(total_final_amount);
+      };
+
+      $("#discount_amount_id").change(function(){
+        let discount_percentage = Number($("#discount_amount_id").val());
+        if (total_final_amount > 0) {
+          final_amount_after_discount = total_final_amount - (discount_percentage * total_final_amount / 100);
+          gross_amount_after_discount = final_amount_after_discount + (2 * Number(s_c_gst_amount)) ;
+          discount_amount_in_rupees = (discount_percentage * total_final_amount / 100);
+          $("#discount_amount_inr_id").val(discount_amount_in_rupees.toFixed(2));
+          $("#final_amount_id").val(final_amount_after_discount.toFixed(2));
+          $("#gross_amount_id").val(gross_amount_after_discount.toFixed(0));
+        }
+        else {
+          discount_amount_in_rupees = 0.00
+          $("#discount_amount_inr_id").val(discount_amount_in_rupees.toFixed(2));
+          $("#final_amount_id").val(total_final_amount);
+          $("#gross_amount_id").val(total_final_amount.toFixed(0));
+        };
+      });
+
+
+      $("#amount_received_id").change(function(){
+        let amt_received = Number($("#amount_received_id").val());
+        let gross_amount = Number($("#gross_amount_id").val())
+        if (amt_received > 0){
+          bal_amount = amt_received - gross_amount;
+          $("#balance_amount_id").val(bal_amount.toFixed(0));
+          if (bal_amount < 0) {
+            $("#balance_amount_id, #alarm_span_id").css({
+                'color': "RED",
+            });
+          }
+          else {
+            $("#balance_amount_id").css({
+                'color': "BLACK",
+            })
+          };          
+        }
+        else {
+          bal_amount = 0.00
+          $("#balance_amount_id").val(bal_amount);
+        };
+      });
+
+      // Summary Details#
+
+      let gold_weight = Number($("#weight_id").val());
+      let only_gold_amount = (Number($("#rate_id").val()) * Number($("#weight_id").val())).toFixed(2);
+      let only_make_amount = Number($("#maketotal_id").val());
+
+      for (let i = 1; i <= 20; i++) {
+        selector_weight_id = "#weight_id"+i;
+        selector_rate_id = "#rate_id"+i;
+        selector_maketotal_id = "#maketotal_id"+i;
+        if( typeof $(selector_weight_id).val() != 'undefined' || $(selector_weight_id).val() != null ){
+          gold_weight = Number(gold_weight) + Number($(selector_weight_id).val());
+          only_gold_amount = Number(only_gold_amount) + (Number($(selector_weight_id).val()) * Number($(selector_rate_id).val()));
+          only_make_amount = Number(only_make_amount) + Number($(selector_maketotal_id).val());
+        };
+      };
+
+      $("#gold_weight_id").val(gold_weight); 
+      $("#net_gold_weight_id").val(gold_weight); 
+      $("#final_only_gold_amount_id").val(only_gold_amount); 
+      $("#gold_only_make_amount_id").val(only_make_amount); 
+      $("#final_gold_plus_make_amount_id").val(Number(Number(only_gold_amount) + Number(only_make_amount)).toFixed(2));
+
+      $("#save_id").show();
+
+      // Click on SAVE button to save to Database
+
+      $("#save_id").click(function(e){
+        e.preventDefault();
+        // alert("Clicked")
+        onclick_savebutton();
+      });            
+    };
+  });
+
+// ****************************************************************************************************************
+// ***************************** End of Calcuate Total Cost from enetered items *****************************
+// ****************************************************************************************************************
+
+
+function getrates(selected_option = '18k', added_rate_id='#rate_id', added_purity_id='#purity_id'){
+  $.ajax({
+    method:"POST",
+    data:{purityparameter: selected_option},
+    cache:false,
+    url:"{{ url_for('getratesforretailsalepage') }}",
+    success:function(response){
+      length=JSON.stringify(response).length;
+      if(length > 2) {
+        $.each(response, function(i, item) {
+          let selectedpurityitem = $(added_purity_id).val();
+          if (item["PURITY"] == selectedpurityitem) {
+            $(added_rate_id).val(item["RATE"])
+          }
+        });
+      } else { $(added_rate_id).val(0) }
+    }
+    });
+};
+
+
+function getexistingcustomernames(){
+  $.ajax({
+          method:"POST",
+          url:"{{url_for('getcustomernameslist') }}",
+          cache:false,
+          data:{get_data:''},
+          success:function(response){
+                  response = response.replace(/["']/g, "").split(',');
+          }
+      });
+};
+
+
+
+function checkcustomername(){
+
+  customername = document.getElementById('name_id').value;
+  console.log(customername);
+
+  $.ajax({
+          method:"POST",
+          url:"{{url_for('getcustomerinfo') }}",
+          cache:false,
+          data:{customernameasparameter: customername},
+          success:function(response){
+            $.each(response, function(i, item) {
+            $("#mobile_number_id").val(item["Mobile Number"]);
+            $("#mobilenumberlist").append($("<option>").attr('value', item["Mobile Number"]).text(item["Mobile Number"]));
+            $('#mobilenumberlist').prop('selectedIndex',i+1);
+            });                  
+          }
+      });
+
+};
+
+
+function functionmetalnamechange(){
+
+  for (let i = 1; i <= 20; i++) {
+      if (i === 1){
+        selector_metalname_id = "#metalname_id";
+        selector_hsn_id = "#hsncode_id";
+        selector_purity_id = "#purity_id";
+        selector_rate_id = "#rate_id";
+        setHSNcode();
+      }
+      else {
+        if( typeof $(selector_metalname_id).val() != 'undefined' || $(selector_metalname_id).val() != null ){
+        selector_metalname_id = "#metalname_id"+i;
+        selector_hsn_id = "#hsncode_id"+i;
+        selector_purity_id = "#purity_id"+i;
+        selector_rate_id = "#rate_id"+i;
+        setHSNcode(selector_metalname_id, selector_hsn_id,selector_purity_id, selector_rate_id);
+        };
+      };
+    };
+};
+
+
+function setHSNcode(selector_metalname_id='#metalname_id', selector_hsn_id ='#hsncode_id',selector_purity_id='#purity_id', selector_rate_id='#rate_id'){
+
+  metalName = $(selector_metalname_id).val();
+
+  if (metalName == 'SILVER' || metalName == 'S RETURN') {
+    $(selector_hsn_id).val('7114')
+  }
+  else if (metalName == 'GOLD' || metalName == 'G RETURN') {
+    $(selector_hsn_id).val('7113');
+    // $(selector_purity_id).empty();
+    // $(selector_purity_id).append($('<option>').val('24K').text('24K'));
+    // $(selector_purity_id).append($('<option>').val('22K').text('22K'));
+    // $(selector_purity_id).append($('<option> selected').val('18K').text('18K'));
+    // $(selector_purity_id).append($('<option>').val('14K').text('14K'));
+    // $(selector_purity_id).append($('<option>').val('12K').text('12K'));
+    // $(selector_purity_id).append($('<option>').val('10K').text('10K'));
+  }
+  else if (metalName == 'DIAMOND') {
+    $(selector_hsn_id).val(metalName);
+    $(selector_rate_id).val('0');
+    $(selector_purity_id).empty();
+    $(selector_purity_id).append($('<option>').val('150 CENTS').text('150 CENTS'));
+    $(selector_purity_id).append($('<option>').val('125 CENTS').text('125 CENTS'));
+    $(selector_purity_id).append($('<option>').val('100 CENTS').text('100 CENTS'));
+    $(selector_purity_id).append($('<option>').val('90 CENTS').text('90 CENTS'));
+    $(selector_purity_id).append($('<option>').val('70 CENTS').text('70 CENTS'));
+    $(selector_purity_id).append($('<option>').val('50 CENTS').text('50 CENTS'));
+    $(selector_purity_id).append($('<option>').val('40 CENTS').text('40 CENTS'));
+    $(selector_purity_id).append($('<option>').val('30 CENTS').text('30 CENTS'));
+    $(selector_purity_id).append($('<option>').val('25 CENTS').text('25 CENTS'));
+  }
+  else if (metalName == 'ADVANCE') {
+    $(selector_hsn_id).val(metalName);
+    $(selector_rate_id).val('0');
+    $(selector_purity_id).empty().append('<option selected="selected" value="ADVANCE">ADVANCE</option>');
+  }
+  else {
+    $(selector_purity_id).empty();
+    $(selector_hsn_id).val(metalName);
+    $(selector_purity_id).empty().append('<option selected="selected" value="OTHER">OTHER</option>');
+  };
+
+};
+
+
+function setexistingrecords() {
+    $( function() {
+      let customenames_as_existing_recordset = [
+      {% for val in Customer_Names %}
+          "{{val}}",
+      {% endfor %}
+    ];
+    $("#existing_record_id").autocomplete({
+    source: customenames_as_existing_recordset
+    });
+    });
+};
+
+
+function setproductlist(){
+  let item_recordset = [
+      {% for item in item_names %}
+          "{{item}}",
+      {% endfor %}
+    ];
+
+    // console.log(item_recordset)
+    $("#productinformation_id").autocomplete({
+    source: item_recordset
+    });
+
+};
+
+});
+
+
+function onclick_savebutton(){
+
+  _customer_id = $("#cust_id").val();
+  _metalname = $("#metalname_id").val();
+  _productinfo = $("#productinformation_id").val();
+  _purity = $("#purity_id").val();
+  _hsncode = $("#hsncode_id").val();
+  _gross_weight = $("#weight_id").val();
+  _quantity = $("#quantity_id").val();
+  _less_weight = $("#less_weight_id").val();
+  _net_weight = $("#net_weight_id").val();
+  _rate = $("#rate_id").val();
+  _makelabourpergms = $("#makelabour_id").val();
+  _makechargesfinal = $("#maketotal_id").val();
+  _finaltotal = $("#finaltotal_id").val();
+  _total_amount = $("#total_amount_id").val();
+  _discount_percentage = $("#discount_amount_id").val();
+  _net_amount = $("#final_amount_id").val();
+  _gst_amount = Number($("#sgst_amount_id").val()) + Number($("#cgst_amount_id").val());
+  _gross_amount = $("#gross_amount_id").val();
+  _discount_amount_inr = $("#discount_amount_inr_id").val();
+  _amount_received = $("#amount_received_id").val();
+  _balance_amount = $("#balance_amount_id").val();
+  _set_alarm_date = $("#set_alarm_id").val();
+  _paymethod = $('input[name=paymentRadios]:checked').val();
+
+  console.log(_paymethod)
+
+  $.ajax({
+          method:"POST",
+          url:"{{url_for('save_retailsale_to_db') }}",
+          cache:false,
+          data:{_customer_id: _customer_id, _metalname: _metalname, _productinfo: _productinfo, _purity: _purity, _hsncode : _hsncode, _gross_weight : _gross_weight, _quantity : _quantity, _less_weight : _less_weight, _net_weight : _net_weight, _rate : _rate, _makelabourpergms : _makelabourpergms, _makechargesfinal : _makechargesfinal, _finaltotal : _finaltotal, _total_amount : _total_amount, _discount_percentage : _discount_percentage, _net_amount: _net_amount, _gst_amount : _gst_amount, _gross_amount : _gross_amount, _discount_amount_inr : _discount_amount_inr, _amount_received : _amount_received, _balance_amount : _balance_amount, _set_alarm_date : _set_alarm_date,  _paymethod : _paymethod},
+          success:function(response){
+            alert("Data Saved Successfully!");
+            $("#print_page_id").show();
+          }
+      }); 
+};
+
+
+</script>
+
+{% endblock %}

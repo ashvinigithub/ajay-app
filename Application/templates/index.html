@@ -1,0 +1,571 @@
+<!doctype html>
+<html> 
+
+<head>
+  {% block head %}
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="static/index-style.css">
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+{% block javascripts %}
+<script src="static/js/jquery-3.6.3.slim.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script type="text/javascript" src="static/index.js"></script>
+{% block javascripts_local %} {% endblock %}
+
+{% endblock %}
+
+  <title>{% block title %} Ajay App - My Webpage {% endblock %} </title>
+  {% endblock %}
+</head>
+
+<body>
+  {% block content %}
+  <div class="wrapper">
+    <!-- Sidebar  -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>Ajay</h3>
+        </div>
+  
+        <ul class="list-unstyled components">
+            <a href="{{url_for('home')}}">Dashboard</a>
+            <li>
+                <a href="{{url_for('add_customer')}}">Add/Update Customer</a>
+            </li>
+            <li>
+                <a href="{{url_for('customer_details')}}">Customer Lookup</a>
+            </li>
+            <li>
+                <a href="{{url_for('home')}}">Retail Sale</a>
+            </li>
+            <li>
+                <a href="{{url_for('rates')}}">Rates</a>
+            </li>
+            <li>
+                <a href="#">Portfolio</a>
+            </li>
+            <li>
+                <a href="#">Contact</a>
+            </li>
+        </ul>
+  
+        <ul class="list-unstyled CTAs">
+            <li>
+                <a href="#" class="download">Download source</a>
+            </li>
+            <li>
+                <a href="#" class="article">Back to article</a>
+            </li>
+        </ul>
+    </nav>
+  
+    <!-- Page Content  -->
+    <div id="content" >
+        <div id="indexpageid" class="container-fluid">
+            <div  class="row">
+                <div class="form-row">
+                    <div class="input-group col-12 mt-3">
+                        <span class="control-label d-flex h-100 align-items-center">Select from Existing Record* &nbsp;</span>
+                        <input type="text" id="existing_record_id" class="form-control"  placeholder="Select Record">
+
+                        <!-- <button id="retailsale_check_customer_btn_id" class="btn btn-info">Check</button> -->
+                        <br> <br>
+
+                    </div>
+
+                    <div class="input-group col-12 mt-3">
+                        <span class="control-label d-flex h-100 align-items-center">ID* &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="ID" id="cust_id" readonly>
+                        <span class="control-label d-flex h-100 align-items-center">Name* &nbsp;</span>
+                        <input list="customernamelist" type="text" class="form-control"  placeholder="Customer Name" id="name_id" readonly>
+                        <!-- <datalist id="customernamelist">
+                            {% for val in Customer_Names %}
+                            <option class="dropdown-item" value= "{{val}}">{{val}}</option> "
+                            {% endfor %}
+                        </datalist> -->
+                        <span class="control-label d-flex h-100 align-items-center ml-2">Mobile Number* &nbsp;</span>
+                        <input list="mobilenumberlist" type="text" class="form-control"  placeholder="Enter Mobile Number"  id="mobile_number_id" readonly>
+                        <datalist id="mobilenumberlist" autocomplete="off"> </datalist>
+                         <span class="control-label d-flex h-100 align-items-center">Address* &nbsp;</span>
+                        <input type="text" class="form-control"placeholder="Address" id="address_id" readonly>
+                    </div>
+                    <div class="input-group col-12 mt-3">
+                        <span class="control-label d-flex h-100 align-items-center">Last Sale On &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="SaleDate" id="last_sale_on_id" autocomplete="None" readonly>
+                        <span class="control-label d-flex h-100 align-items-center ml-2">Pending Amount Date &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="Pending Amount Date" id="pending_amount_date_id" readonly>
+                        <span class="control-label d-flex h-100 align-items-center ml-2">Pending Amount* &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="Pending Amount*" id="pending_amount_id" readonly>
+                    </div>
+                </div>
+
+                <div class="jumbotron jumbotron-fluid mt-5 p-2" id="dataAdd">
+                    <div class="container-fluid">
+                        <div class="form-row">
+                            <div class="form-group col-md-1">
+                                <label for ="metalname_id" >Metal Name</label>
+                                <select class="browser-default custom-select metalname-class" id="metalname_id">
+                                    <option value="GOLD" selected>GOLD</option>
+                                    <option value="SILVER">SILVER</option>
+                                    <option value="OTHER">OTHERS</option>
+                                    <option value="S RETURN">S RETURN</option>
+                                    <option value="G RETURN">G RETURN</option>
+                                    <option value="STONE">STONE</option>
+                                    <option value="DIAMOND">DIAMOND</option>
+                                    <option value="1 GRAM GOLD">1gm GOLD</option>
+                                    <option value="ADVANCE">ADVANCE</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label>Product </label>
+                                <input class="form-control" id="productinformation_id" type="text" oninput="this.value = this.value.toUpperCase()">
+                            </div>
+                            
+                            <div class="form-group col-md-1">
+                                <label for="purity_id">Purity</label>
+                                <select class="browser-default custom-select purity-class" id="purity_id">
+                                    <option value="24k">24k</option>
+                                    <option value="22k">22k</option>
+                                    <option value="18k" selected>18k</option>
+                                    <option value="16k">16k</option>
+                                    <option value="14k">14k</option>
+                                    <option value="12k">12k</option>
+                                    <option value="10k">10k</option>
+                                    <option value="9k">9k</option>
+                                    <option value="Silver-P">Silver-P</option>
+                                    <option value="Silver">Silver</option>
+                                    <option value="NA">NA</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label>HSN Code</label>
+                                <input class="form-control" id="hsncode_id" type="text" value="7113">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label>Gross Wt</label>
+                                <input class="form-control weight-class" id="weight_id" type="number" min="0" placeholder=0>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label>Quantity</label>
+                                <input class="form-control quantity-class" id="quantity_id" type="number" min="1" placeholder=1 value="1">
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label>Less Wt</label>
+                                <input class="form-control less-weight-class" id="less_weight_id" type="number" min="0" placeholder=0>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label>Net Wt</label>
+                                <input class="form-control net-weight-class" id="net_weight_id" type="number" min="0" placeholder=0 readonly>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label>Rate /gm ( &#8377; )</label>
+                                <input class="form-control rate-class" id="rate_id" type="text" min="0" placeholder=&#8377;>
+                            </div>
+                            <!-- <div class="form-group col-md-1">
+                                <label for="make_percent_id">Making %</label>
+                                <select class="browser-default custom-select" id="make_percent_id">
+                                    <option value="0.15" selected>15%</option>
+                                    <option value="0.14">14%</option>
+                                    <option value="0.13">13%</option>
+                                    <option value="0.12">12%</option>
+                                    <option value="0.11">11%</option>
+                                    <option value="0.10">10%</option>
+                                    <option value="0.09">09%</option>
+                                    <option value="0.08">08%</option>
+                                    <option value="0.05">05%</option>
+                                    <option value="0.00">NA</option>
+                                </select>
+                            </div> -->
+                            <div class="form-group col-md-1">
+                                <label>Labour /gm(&#8377;)</label>
+                                <input class="form-control labour-per-gm-class" id="makelabour_id" type="text" min="0" placeholder=0>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label>Make (&#8377;)</label>
+                                <input class="form-control maketotal-class" id="maketotal_id" type="number" min="0" placeholder=0>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label>Total (&#8377;)</label>
+                                <input class="form-control final-total-class" id="finaltotal_id" type="number" placeholder=0>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-info" id="addRow">Add row</button>
+                    <button class="btn btn-danger" id="deleteRow">Delete row</button>
+                    <button class="btn btn-dark" id="gettotalcost_id">Calculate</button>
+                    <button style="display: none; visibility: visible;" class="btn btn-secondary" id="save_id">Save</button>
+                    <button style="display: none; visibility: visible;" class="btn btn-primary" id="print_page_id">Print</button>
+
+                </div>
+
+                <!-- Total Amount , Discount, Final, GST, Gross Amounts -->
+                <div class="container-fluid" id="amount_calculation_id">
+                    <div class="row justify-content-end">
+                        <div class="form-group col-2 mt-3">
+                            <span class="control-label d-flex h-100 align-items-center">Total Amount &#8377;</span>
+                            <input type="text" class="form-control"  placeholder=0 min="0" id="total_amount_id" readonly>
+                        </div> 
+                        <!-- <div class="w-100"></div> -->
+                        <div class="form-group col-2 mt-3" style = "float:right;">
+                            <span class="control-label d-flex h-100 align-items-center">Discount Percent %</span>
+                            <input type="number" class="form-control"  placeholder=0 min="0" id="discount_amount_id">
+                        </div>
+                        <div class="form-group col-2 mt-3" style = "float:right;">
+                            <span class="control-label d-flex h-100 align-items-center">Net Amount &#8377;</span>
+                            <input type="text" class="form-control"  placeholder=0 min="0" id="final_amount_id" readonly>
+                        </div> 
+                        <!-- <div class="w-100"></div> -->
+                        <div class="form-group col-2 mt-3" style = "float:right;">
+                            <span class="control-label d-flex h-100 align-items-center">SGST Amount @1.5% &#8377;</span>
+                            <input type="text" class="form-control"  placeholder=0 min="0" id="sgst_amount_id" readonly>
+                        </div>   
+                        <div class="form-group col-2 mt-3" style = "float:right;">
+                            <span class="control-label d-flex h-100 align-items-center">CGST Amount @1.5% &#8377;</span>
+                            <input type="text" class="form-control"  placeholder=0 min="0" id="cgst_amount_id" readonly>
+                        </div> 
+                        <!-- <div class="w-100"></div> -->
+                        <div class="form-group col-2 mt-3" style = "float:right;">
+                            <span class="control-label d-flex h-100 align-items-center">Gross Amount &#8377;</span>
+                            <input type="number" class="form-control"  placeholder=0 min="0" id="gross_amount_id" readonly>
+                        </div> 
+                        <div class="form-group col-2 mt-3">
+                            <span class="control-label d-flex h-100 align-items-center">Discount Amount (Rs.) &#8377; </span>
+                            <input type="text" class="form-control"  placeholder=0 min="0" id="discount_amount_inr_id" readonly>
+                        </div> 
+                        <div class="form-group col-2 mt-3">
+                            <span class="control-label d-flex h-100 align-items-center">Amount Received &#8377;</span>
+                            <input type="number" class="form-control"  placeholder=0 min="0" id="amount_received_id">
+                        </div> 
+                        <div class="form-group col-2 mt-3">
+                            <span class="control-label d-flex h-100 align-items-center">Balance Amount &#8377;</span>
+                            <input type="number" class="form-control"  placeholder=0 id="balance_amount_id">
+                        </div> 
+                        <div class="form-group col-2 mt-3" id="div_alarm_id">
+                            <span class="control-label d-flex h-100 align-items-center alarm_span_id" style="color: red;">Set Alarm Date (if bal < 0)</span>
+                            <input type="date" class="form-control"  placeholder=0 min="0" id="set_alarm_id">
+                        </div> 
+                    </div> 
+                </div> 
+            </div><br><br>
+
+
+
+                <!-- <div class="jumbotron jumbotron-fluid mt-0 p-4">
+                    <h4 style="display:flex; align-items: center; justify-content: center; flex-direction: column;"> Summary Details#</h4>
+                    <div class="container-fluid" id="amount_calculation_id"> 
+                        <div class="row">
+                            <div class="form-group col-2 mt-3">
+                                <span class="control-label d-flex h-100 align-items-center">Gold Weight</span>
+                                <input type="text" class="form-control"  placeholder=0 id="gold_weight_id" readonly>
+                            </div>
+                            <div class="form-group col-2 mt-3" style = "float:right;">
+                                <span class="control-label d-flex h-100 align-items-center">Net Gold Weight</span>
+                                <input type="text" class="form-control"  placeholder=0 id="net_gold_weight_id" readonly>
+                            </div>
+                            <div class="form-group col-2 mt-3" style = "float:right;">
+                                <span class="control-label d-flex h-100 align-items-center">Gold Amount &#8377;</span>
+                                <input type="text" class="form-control"  placeholder=0 id="final_only_gold_amount_id" readonly>
+                            </div> 
+                            <div class="form-group col-2 mt-3" style = "float:right;">
+                                <span class="control-label d-flex h-100 align-items-center">Make Amount &#8377;</span>
+                                <input type="text" class="form-control"  placeholder=0 id="gold_only_make_amount_id" readonly>
+                            </div>   
+                            <div class="form-group col-3 mt-3" style = "float:right;">
+                                <span class="control-label d-flex h-100 align-items-center">Final Gold + Make Amount &#8377;</span>
+                                <input type="text" class="form-control"  placeholder=0 id="final_gold_plus_make_amount_id" readonly>
+                            </div> 
+                        </div> -->
+
+                        <!-- <div class="row">
+                            <div class="form-group col-2 mt-3">
+                                <span class="control-label d-flex h-100 align-items-center">Silver Weight</span>
+                                <input type="text" class="form-control"  placeholder=0 id="silver_weight_id" readonly>
+                            </div>
+                            <div class="form-group col-2 mt-3" style = "float:right;">
+                                <span class="control-label d-flex h-100 align-items-center">Net Silver Weight</span>
+                                <input type="text" class="form-control"  placeholder=0 id="net_silver_weight_id" readonly>
+                            </div>
+                            <div class="form-group col-2 mt-3" style = "float:right;">
+                                <span class="control-label d-flex h-100 align-items-center">Silver Amount &#8377;</span>
+                                <input type="text" class="form-control"  placeholder=0 id="final_silver_amount_id" readonly>
+                            </div> 
+                            <div class="form-group col-2 mt-3" style = "float:right;">
+                                <span class="control-label d-flex h-100 align-items-center">Make Amount &#8377;</span>
+                                <input type="text" class="form-control"  placeholder=0 id="silver_make_amount_id" readonly>
+                            </div>   
+                            <div class="form-group col-3 mt-3" style = "float:right;">
+                                <span class="control-label d-flex h-100 align-items-center">Final Silver + Make Amount &#8377;</span>
+                                <input type="text" class="form-control"  placeholder=0 id="final_silver_make_amount_id" readonly>
+                            </div> 
+                        </div><br><br> -->
+
+                    <!-- payment details -->
+                        <div class="jumbotron jumbotron-fluid mt-0 p-4">
+                        <h4 style="display:flex; align-items: center; justify-content: center; flex-direction: column;"> Payment Details#</h4>
+                            <div class="container-fluid" id="amount_calculation_id">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentRadios" id="cash_radio_id" value="cash" checked>
+                                    <label class="form-check-label" for="cash_radio_id">
+                                    Cash
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentRadios" id="paytm_radio_id" value="paytm">
+                                    <label class="form-check-label" for="paytm_radio_id">
+                                    Paytm
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentRadios" id="creditcard_radio_id" value="creditcard">
+                                    <label class="form-check-label" for="creditcard_radio_id">
+                                    Credit Card
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentRadios" id="debitcard_radio_id" value="debitcard">
+                                    <label class="form-check-label" for="debitcard_radio_id">
+                                    Debit Card
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentRadios" id="other_online_radio_id" value="other">
+                                    <label class="form-check-label" for="other_online_radio_id">
+                                    OnlineMode (PhonePe/GPay)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                <!-- </div> -->
+             <!-- </div> -->
+
+             <!-- <div class="jumbotron jumbotron-fluid mt-0 p-4">
+                <div class="form-check">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input value = "CASH" type="radio" id="retail_sale_cash_radio_btn_id" name="retail_sale_radio_btn" class="custom-control-input" checked="checked" >
+                        <label class="custom-control-label" for="retail_sale_cash_radio_btn_id">Cash</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input value = "ONLINE" type="radio" id="retail_sale_online_radio_btn_id" name="retail_sale_radio_btn" class="custom-control-input">
+                        <label class="custom-control-label" for="retail_sale_online_radio_btn_id">Online/Card</label>
+                    </div>
+                </div>
+            </div>   -->
+
+        </div> 
+        <!-- div of indexpageid ends here -->
+
+
+    <!-- Customer Details .html Content  -->
+        <div id="salespageid" style="display: none;">
+            <div>
+                <label for="mycustomernamesid"> Customer Name: </label>
+                <input  list="customerlist" id="mycustomernamesid" name="mycustomernamesid"/>
+                <datalist  id="customerlist">
+                {% for val in Customer_Names %}
+                <option style="width: 100%;" class="dropdown-item" value= "{{val}}">{{val}}</option> "
+                {% endfor %}
+                </datalist >
+                <button onclick="validatecustomername()" id="val-screens.screenid" class="btn btn-info">Check</button>
+
+                <label for="mycustomermobilenumid"> Mobile No: </label>
+                <input list="customermobilelist" id="mycustomermobilenumid" name="mycustomermobilenumid"/>
+                <datalist id="customermobilelist" autocomplete="off"> </datalist>
+                <button id="displayreset_id" class="btn btn-info">Reset</button>
+                <!-- <ul style="padding: 0px;" id="mobilenumid_divtag" class="list-group"> </ul> -->
+                
+                <div style="line-height: 0.5"> 
+                    <table id="sales_page_table"></table>
+                    <table id="sales_data_table"></table>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Add / Update Customer -->
+        <div id="add_customer_divid" style="display: none;">
+            
+            <div class="custom-control custom-radio custom-control-inline">
+                <input value = "UPDATE" type="radio" id="add_cust_page_update_radio_btn_id" name="add_cust_page_radio_btn" class="custom-control-input">
+                <label class="custom-control-label" for="add_cust_page_update_radio_btn_id">Update Existing Customer Details</label>
+              </div>
+              <div class="custom-control custom-radio custom-control-inline">
+                <input value = "INSERT" type="radio" id="add_cust_page_insert_radio_btn_id" name="add_cust_page_radio_btn" class="custom-control-input">
+                <label class="custom-control-label" for="add_cust_page_insert_radio_btn_id">Add New Customer</label>
+              </div><br><br>
+
+            <div id="add_cust_page_update_div_id" style="display: none;">
+                <div class="row">
+                    <div class="input-group col-12 mt-3">
+                        <span class="control-label d-flex h-100 align-items-center">Update an Existing Customer* &nbsp;</span>
+                        <input type="text" id="add_cust_page_existing_customer_id" class="form-control"  placeholder="Select Record">
+                    </div>
+                    <div class="input-group col-12 mt-3">
+                        <span class="control-label d-flex h-100 align-items-center">ID* &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="ID" id="add_cust_page_cust_id" readonly>
+
+                        <span class="control-label d-flex h-100 align-items-center">Name* &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="Customer Name" id="add_cust_page_name_id" readonly>
+                        <button id="add_cust_page_edit_name_btn_id" class="btn btn-dark">Edit</button>
+
+                        <span class="control-label d-flex h-100 align-items-center ml-2">Mobile Number* &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="Enter Mobile Number"  id="add_cust_page_mobile_number_id" readonly>
+                        <button id="add_cust_page_edit_mobile_btn_id" class="btn btn-dark">Edit</button>
+                    </div>
+                    <div class="input-group col-12 mt-3">
+                        <span class="control-label d-flex h-100 align-items-center">Address* &nbsp;</span>
+                        <input type="text" class="form-control"placeholder="Address" id="add_cust_page_address_id" readonly>
+                        <button id="add_cust_page_edit_address_btn_id" class="btn btn-success">Edit</button>
+                    </div>
+
+                    <div class="input-group col-12 mt-3">
+                        <span class="control-label d-flex h-100 align-items-center"> PAN &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="PAN" id="add_cust_page_pan_id" readonly>
+                        <button id="add_cust_page_edit_pan_btn_id" class="btn btn-info">Edit</button>
+
+                        <span class="control-label d-flex h-100 align-items-center ml-2">Adhaar &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="Enter Adhaar Number" id="add_cust_page_adhaar_id" readonly>
+                        <button id="add_cust_page_edit_adhaar_btn_id" class="btn btn-info">Edit</button>
+
+                        <span class="control-label d-flex h-100 align-items-center ml-2">DOB* &nbsp;</span>
+                        <input type="text" class="form-control"  placeholder="Birth Date" id="add_cust_page_DOB_id" readonly>
+                        <button id="add_cust_page_edit_dob_btn_id" class="btn btn-info">Edit</button>
+                    </div>
+                </div><br><br>
+                <button type="button" id = "add_cust_page_save_to_db_id" class="btn btn-dark">Save</button>
+            </div>
+
+            <div id = "add_cust_page_insert_div_id" style="display: none;">
+
+                <form>
+                    <div class="form-row">
+                      <div class="form-group col-md-6">
+                        <label for="add_cust_page_new_name_id">Customer Name*</label>
+                        <input type="text" class="form-control" id="add_cust_page_new_name_id" placeholder="Name" oninput="this.value = this.value.toUpperCase()">
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="add_cust_page_new_mobile_number_id">Mobile*</label>
+                        <input type="number" min="0" class="form-control" id="add_cust_page_new_mobile_number_id" placeholder="Mobile (10 digit)">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="add_cust_page_new_address_id">Address</label>
+                      <input type="text" class="form-control" id="add_cust_page_new_address_id" placeholder="Enter Address - " oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-4">
+                        <label for="add_cust_page_new_pan_id">PAN</label>
+                        <input type="text" class="form-control" id="add_cust_page_new_pan_id" oninput="this.value = this.value.toUpperCase()">
+                      </div>
+                      <div class="form-group col-md-4">
+                        <label for="add_cust_page_new_adhaar_id">Adhaar</label>
+                        <input type="text" class="form-control" id="add_cust_page_new_adhaar_id">
+                      </div>
+                      <div class="form-group col-md-4">
+                        <label for="add_cust_page_new_dob_id">DOB</label>
+                        <input type="text" class="form-control" id="add_cust_page_new_dob_id">
+                      </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="add_cust_page_new_save_id">Save</button>
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Rates Page Content -->
+        <div id="ratespageid" style="display: none;" class="container-fluid">
+                <button type="button" class="btn btn-primary btn-default" data-toggle="modal" data-target="#exampleModal">
+                    Update Gold/Silver Rates
+                </button>
+
+                <p>
+                <button class="btn btn-primary ml-3 mt-4 btn-default" type="button" data-toggle="collapse" data-target="#ratesdata_id" aria-expanded="false" aria-controls="ratesdata-aria">
+                  Get Rates
+                </button>
+                </p>
+
+                <p>
+                    <button class="btn btn-primary ml-3 mt-4 btn-default" type="button" data-toggle="collapse" id="deleteratesdata_id" aria-expanded="false" aria-controls="ratesdata-aria">
+                      Delete Rate
+                    </button>
+                    <div id="ratesdeletedateoptionid" style="display: none;">
+                        <span class="control-label d-flex h-100 align-items-center ml-2">Choose Date to delete rate on* &nbsp;</span>
+                        <input type="date" style="width: 10rem; height: 2rem;" class="form-control" id="ratesdeletedateinputid" required>
+                        
+                    </div>
+                    <div id="ratessubmitoption_divid" style="display: none;">
+                        <button class="btn btn-danger ml-3 mt-4  btn-lg" type="button" data-toggle="collapse" id="deleteratessubmitdata_id" aria-expanded="false" aria-controls="ratesdata-aria">Submit</button>
+                    </div>
+                </p>
+
+              <div class="collapse" id="ratesdata_id">
+                <div class="card card-body" style="line-height: 0.5">
+                    <table id="rates_page_table"></table>
+                </div>
+              </div>
+        
+            <!-- Rates Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel" style="align-content: center;">Set Today's Rate</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                        <div class="row">
+                            <div class="input-group mb-3">
+                                <div class="col-12 col-sm-12">
+                                    <input id="rate_page_input_id_24k" type="text" class="form-control" placeholder="&#8377; 24k Rate per 10 gm" aria-label="" aria-describedby="basic-addon1">
+                                    <!-- <input id="rate_page_input_id_22k" type="text" class="form-control" placeholder="&#8377; 22k Rate per gm" aria-label="" aria-describedby="basic-addon1">
+                                    <input id="rate_page_input_id_20k" type="text" class="form-control" placeholder="&#8377; 20k Rate per gm" aria-label="" aria-describedby="basic-addon1">
+                                    <input id="rate_page_input_id_18k" type="text" class="form-control" placeholder="&#8377; 18k Rate per gm" aria-label="" aria-describedby="basic-addon1">
+                                    <input id="rate_page_input_id_16k" type="text" class="form-control" placeholder="&#8377; 16k Rate per gm" aria-label="" aria-describedby="basic-addon1">
+                                    <input id="rate_page_input_id_14k" type="text" class="form-control" placeholder="&#8377; 14k Rate per gm" aria-label="" aria-describedby="basic-addon1">
+                                    <input id="rate_page_input_id_12k" type="text" class="form-control" placeholder="&#8377; 12k Rate per gm" aria-label="" aria-describedby="basic-addon1">
+                                    <input id="rate_page_input_id_10k" type="text" class="form-control" placeholder="&#8377; 10k Rate per gm" aria-label="" aria-describedby="basic-addon1">
+                                    <input id="rate_page_input_id_9k" type="text" class="form-control" placeholder="&#8377; 9k Rate per gm" aria-label="" aria-describedby="basic-addon1"> -->
+                                    <input id="rate_page_input_id_silver" type="text" class="form-control" placeholder="&#8377; Silver per kg" aria-label="" aria-describedby="basic-addon1">
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button id="set_rate_button_modalid" type="button" class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+  </div>
+</div>
+    {% endblock %}
+
+  <div id="footer" class="footer">
+    <div class="content has-text-centered">
+    {% block footer %}
+    &copy; Copyright Ashvini by <a href="http://domain.invalid/">you</a>.
+    {% endblock %}
+  </div></div>
+</div>
+</body>
+
+
+</html>

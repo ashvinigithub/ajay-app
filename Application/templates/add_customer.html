@@ -1,0 +1,192 @@
+{% extends "index.html" %}
+{% block title %}Add a Customer{% endblock %}
+
+{% block head %}
+
+<h1>ADD NEW CUSTOMER</h1>
+  {{ super() }}
+  <style type="text/css">
+    .important { color: #336699; }
+  </style>
+{% endblock %}
+{% block content %}
+
+{{ super() }}
+
+{% endblock %}
+
+{% block javascripts_local  %}
+{{ super() }}
+<!-- <script src="{{ url_for('static', filename='js/homejs.js') }}"></script> -->
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+  
+  $("#indexpageid").hide();
+  $("#salespageid").hide();
+  $("#displayreset_id").hide();
+  $("#add_customer_divid").show();
+  $("#add_cust_page_update_div_id").hide();
+  $("#add_cust_page_insert_div_id").hide();
+  setexistingrecords();
+
+  $("#add_cust_page_update_radio_btn_id, #add_cust_page_insert_radio_btn_id") // select the radio by its id
+    .change(function(){ // bind a function to the change event
+        if( $(this).is(":checked") ){ // check if the radio is checked
+            if ($(this).val() == 'UPDATE') {
+              $("#add_cust_page_update_div_id").show();
+              $("#add_cust_page_insert_div_id").hide();
+            }
+            else if ($(this).val() == 'INSERT') {
+              $("#add_cust_page_update_div_id").hide();
+              $("#add_cust_page_insert_div_id").show();
+            }
+          };            
+        });
+
+  $("#add_cust_page_existing_customer_id").change(function() {
+
+      $('#add_cust_page_name_id').prop('readonly', false);
+      $('#add_cust_page_mobile_number_id').prop('readonly', false);
+      $('#add_cust_page_address_id').prop('readonly', false);
+      $("#add_cust_page_name_id").val('');
+      $("#add_cust_page_mobile_number_id").val('');
+      $("#add_cust_page_address_id").val('');
+
+      let selectedrecord = $(this).val();
+      let myArray = selectedrecord.toString().split("|");
+
+      if ($("#add_cust_page_existing_customer_id").val() != '') {
+      $('#add_cust_page_name_id').prop('readonly', true);
+      $('#add_cust_page_mobile_number_id').prop('readonly', true);
+      $('#add_cust_page_address_id').prop('readonly', true);
+      }
+
+      $("#add_cust_page_cust_id").val(myArray[0].trim());
+      $("#add_cust_page_name_id").val(myArray[1].trim());
+      $("#add_cust_page_mobile_number_id").val(myArray[2].trim());
+      $("#add_cust_page_address_id").val(myArray[3].trim());
+  });
+
+  // Edit Customer name
+  $("#add_cust_page_edit_name_btn_id").click(function() {
+    $('#add_cust_page_name_id').prop('readonly', false);
+  });
+  // Edit Mobile
+  $("#add_cust_page_edit_mobile_btn_id").click(function() {
+    $('#add_cust_page_mobile_number_id').prop('readonly', false);
+  });
+  // Edit Address
+  $("#add_cust_page_edit_address_btn_id").click(function() {
+    $('#add_cust_page_address_id').prop('readonly', false);
+  });
+
+  $("#add_cust_page_edit_pan_btn_id").click(function() {
+    $('#add_cust_page_pan_id').prop('readonly', false);
+  });
+  $("#add_cust_page_edit_adhaar_btn_id").click(function() {
+    $('#add_cust_page_adhaar_id').prop('readonly', false);
+  });
+  $("#add_cust_page_edit_dob_btn_id").click(function() {
+    $('#add_cust_page_DOB_id').prop('readonly', false);
+  });
+  
+  // Save changes UPDATE 
+
+  $("#add_cust_page_save_to_db_id").click(function() {
+
+    updated_cust_id = $('#add_cust_page_cust_id').val();
+    updated_cust_name = $('#add_cust_page_name_id').val().toString().toUpperCase();
+    updated_mobile_number = $('#add_cust_page_mobile_number_id').val();
+    updated_address = $('#add_cust_page_address_id').val().toString().toUpperCase();
+    updated_pan = $('#add_cust_page_pan_id').val().toString().toUpperCase();
+    updated_adhaar = $('#add_cust_page_adhaar_id').val();
+    updated_dob = $('#add_cust_page_DOB_id').val();
+
+    if (updated_cust_name == '' || updated_mobile_number == '0' || updated_address == '' || updated_mobile_number.length != 10) {
+      if (updated_cust_name == '') {
+        alert('Please enter a customer name!');
+      }
+      else if (updated_mobile_number == '0' || updated_mobile_number.length != 10 ) {
+        alert('Please enter a 10 digit mobile number!');
+      }
+      else if (updated_address == '') {
+        alert('Please enter address!');
+      }
+    }
+    else{
+
+      $.ajax({
+          method:"POST",
+          url:"{{url_for('updatecustomerinfo') }}",
+          cache: false,
+          data:{customer_id : updated_cust_id, updated_cust_name: updated_cust_name, updated_mobile_number: updated_mobile_number, updated_address: updated_address, updated_pan:updated_pan, updated_adhaar: updated_adhaar, updated_dob:updated_dob},
+          success:function(response){
+            alert("Data Updated!");
+            window.location =  "{{ url_for('add_customer') }}"
+          }
+      });
+    };
+  });
+
+
+  // Insert a new customer
+
+  $("#add_cust_page_new_save_id").click(function() {
+
+    new_cust_name = $('#add_cust_page_new_name_id').val().toString().toUpperCase();
+    new_mobile_number = $('#add_cust_page_new_mobile_number_id').val();
+    new_address = $('#add_cust_page_new_address_id').val().toString().toUpperCase();
+    new_pan = $('#add_cust_page_new_pan_id').val().toString().toUpperCase();
+    new_adhaar = $('#add_cust_page_new_adhaar_id').val();
+    new_dob = $('#add_cust_page_new_dob_id').val();
+
+    if (new_cust_name == '' || new_mobile_number == '0' || new_address == '' || new_mobile_number.length != 10) {
+      if (new_cust_name == '') {
+        alert('Please enter a customer name!');
+      }
+      else if (new_mobile_number == '0' || new_mobile_number.length != 10 ) {
+        alert('Please enter a 10 digit mobile number!');
+      }
+      else if (new_address == '') {
+        alert('Please enter address!');
+      }
+    }
+    else{
+      $.ajax({
+          method:"POST",
+          url:"{{url_for('insert_new_customer') }}",
+          cache: false,
+          data:{new_cust_name: new_cust_name, new_mobile_number: new_mobile_number, new_address: new_address, new_pan:new_pan, new_adhaar: new_adhaar, new_dob:new_dob},
+          success:function(response){
+            alert("New Entry Is complete!");
+            window.location =  "{{ url_for('add_customer') }}"
+          }
+      });
+    };
+
+  });
+
+
+
+});
+
+
+function setexistingrecords() {
+    $( function() {
+        let customernames_as_existing_recordset = [
+        {% for val in Customer_Names %}
+          "{{val}}",
+        {% endfor %}
+        ];
+        $("#add_cust_page_existing_customer_id").autocomplete({
+        source: customernames_as_existing_recordset
+        });
+      });
+};
+
+
+</script>
+
+{% endblock %}

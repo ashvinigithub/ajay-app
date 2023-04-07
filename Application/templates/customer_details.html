@@ -1,0 +1,129 @@
+{% extends "index.html" %}
+{% block title %}Customer Details Page{% endblock %}
+
+{% block head %}
+
+<h1>CUSTOMER LOOKUP</h1>
+  {{ super() }}
+  <style type="text/css">
+    .important { color: #336699; }
+  </style>
+{% endblock %}
+{% block content %}
+
+{{ super() }}
+
+{% endblock %}
+
+{% block javascripts_local  %}
+{{ super() }}
+<!-- <script src="{{ url_for('static', filename='js/homejs.js') }}"></script> -->
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+
+  $("#indexpageid").hide();
+  $("#salespageid").show();
+  $("#displayreset_id").hide();
+  
+    $.ajax({
+                method:"POST",
+                url:"{{url_for('getcustomernameslist') }}",
+                cache: false,
+                data:{get_data:''},
+                success:function(response){
+                        response = response.replace(/["']/g, "").split(',');
+                }
+            })
+});
+
+function validatecustomername(){
+    // $("#customermobilelist option").hide();
+    displayreset();
+    $("#customermobilelist").click(function() {
+    this.value = '';
+    });
+    console.log(document.getElementById('mycustomernamesid').value); //WORKS
+    customername = document.getElementById('mycustomernamesid').value;
+
+    $.ajax({
+                method:"POST",
+                url:"{{url_for('getcustomerinfo') }}",
+                cache:false,
+                data:{customernameasparameter: customername},
+                success:function(response){
+                  $.each(response, function(i, item) {
+                  delete item["X DB Key"];
+                  $("#mycustomermobilenumid").val(item["Mobile Number"]);
+                  let e_item = "Existing Mobile Number in Database: ".concat(item["Mobile Number"]);
+                  e_item = e_item.concat(" Address is - ").concat(item["Address"]);
+                  // $("#mobilenumid_divtag").addClass('list-group-item list-group-item-light').append($("<li>").attr('value', item["Mobile Number"]).text(e_item));
+                  $("#customermobilelist").append($("<option>").attr('value', item["Mobile Number"]).text(item["Mobile Number"]));
+                  $('#customermobilelist').prop('selectedIndex',i+1);
+                  });                  
+                  
+                  tableGenerator('#sales_page_table', response)
+                displayCustomerData();
+                }
+            })
+
+    function displayCustomerData() {
+
+      $.ajax({
+                method:"POST",
+                url:"{{url_for('getcustomerdata') }}",
+                cache:false,
+                data:{customernameasparameter: customername},
+                success:function(response){
+                  $.each(response, function(i, item) {
+                  delete item["0_X DB Key"];
+                  });
+                  tableGenerator('#sales_data_table', response);
+                  $("#displayreset_id").show();
+                  $("#displayreset_id").on("click", function(e){
+                    $("#mycustomernamesid").val('');
+                    displayreset()
+                  });
+                }
+            })
+    };
+
+    function tableGenerator(selector, data){ // data is an array
+        let keys = Object.keys(Object.assign({}, ...data));// Get the keys to make the header
+        // Add header
+        let head = '<thead><tr>';
+        keys.forEach(function(key) {
+        head += '<th>'+key+'</th>';
+        });
+        $(selector).append(head+'</tr></thead>');
+        // Add body
+        let body = '<tbody>';
+        data.forEach(function(obj) { // For each row
+        let row = '<tr>';
+        keys.forEach(function(key) { // For each column
+            row += '<td>';
+            if (obj.hasOwnProperty(key)) { // If the obj doesnt has a certain key, add a blank space.
+            row += obj[key];
+            }
+            row += '</td>';
+        });
+        body += row+'<tr>';
+        });
+        $(selector).append(body+'</tbody>');
+        $(selector).append('<table>').addClass('table table-striped table-bordered table-hover');
+
+    }
+
+  function displayreset(){
+      $("#customermobilelist").empty();
+      $("#mycustomermobilenumid").val('');
+      $("#mobilenumid_divtag").empty();
+      $('#sales_page_table').empty(); 
+      $('#sales_data_table').empty();
+      $("#customerlist").val('');
+    }
+}
+</script>
+
+{% endblock %}
