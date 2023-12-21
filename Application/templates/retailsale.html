@@ -21,7 +21,7 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-
+ 
 
 //*************************** Select from Existing Record ******* STARTS *****************************
   setexistingrecords();
@@ -111,7 +111,7 @@ $("#dataAdd .container-fluid:last").append(
                 ' </div>'+
                 '<div class="form-group col-md-1">'+
                 '<label></label>'+
-                '<input class="form-control" id="productinformation_id'+len+'" type="text">'+
+                '<input class="form-control productinformation_class" id="productinformation_id'+len+'" type="text">'+
                 ' </div>'+
                 '<div class="form-group col-md-1">'+
                             '<label></label>'+
@@ -131,7 +131,7 @@ $("#dataAdd .container-fluid:last").append(
                   '</div>'+
                 '<div class="form-group col-md-1">'+
                 '<label></label>'+
-                '<input class="form-control" id="hsncode_id'+len+'" type="text" value="7113">'+
+                '<input class="form-control hsn-class" id="hsncode_id'+len+'" type="text" value="7113">'+
                 '</div>'+
 
                 '<div class="form-group col-md-1">'+
@@ -188,14 +188,17 @@ $("#dataAdd .container-fluid:last").append(
                 );
   // added_purity_id = '#purity_id'+len
   // added_rate_id = '#rate_id'+len
+  setproductlist();
   getrates(selected_option='18k', '#rate_id'+len, '#purity_id'+len)
   $(".purity-class").change(function() {
       let selected_option = $('option:selected', this).text();
       getrates(selected_option, '#rate_id'+len, '#purity_id'+len);
-      callEventCalculate();
+      callEventCalculate(); 
     });
+
   checkformetalnameclickevent();
   callEventCalculate();
+  
 });
         
 $("#deleteRow").click(function(){
@@ -580,7 +583,21 @@ function setexistingrecords() {
       {% endfor %}
     ];
     $("#existing_record_id").autocomplete({
-    source: customenames_as_existing_recordset
+    source: customenames_as_existing_recordset,
+    select: function(event, ui) {
+
+      let selectedRecord = ui.item.value;
+      let myArray = selectedRecord.split("|").map(item => item.trim());
+              // Update fields
+        $("#cust_id").val(myArray[0]);
+        $("#name_id").val(myArray[1]);
+        $("#mobile_number_id").val(myArray[2]);
+        $("#address_id").val(myArray[3]);
+        $("#last_sale_on_id").val(myArray[4]);
+        $("#pending_amount_date_id").val(myArray[5]);
+        $("#pending_amount_id").val(myArray[6]);
+      
+    }
     });
     });
 };
@@ -594,7 +611,7 @@ function setproductlist(){
     ];
 
     // console.log(item_recordset)
-    $("#productinformation_id").autocomplete({
+    $(".productinformation_class").autocomplete({
     source: item_recordset
     });
 

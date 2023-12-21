@@ -19,13 +19,27 @@ app.config['DEBUG'] = True
 
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('home.html' , verdict='Success')
+    return render_template('index.html' , verdict='Success')
 
 
 @app.route('/secondpage', methods=['GET'])
 def secondpage():
     return render_template('second_page.html' , verdict='Success')
 
+
+@app.route('/add_customer', methods=['GET'])
+def add_customer():
+    return render_template('add_customer.html' , verdict='Success')
+
+
+@app.route('/customer_details', methods=['GET'])
+def customer_details():
+    return render_template('customer_details.html' , verdict='Success')
+
+
+@app.route('/rates', methods=['GET'])
+def rates():
+    return render_template('rates.html' , verdict='Success')
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=5000)
